@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PARASITE — Checkout</title>
+
+<style>
+:root{
+  --bg:#070707;
+  --text:#f2f2f2;
+  --muted:#bdbdbd;
+  --blood:#ff1a1a;
+  --line:rgba(255,255,255,0.12);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: Arial, Helvetica, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1000px 600px at 20% 10%, rgba(255,26,26,0.18), transparent 60%),
+    radial-gradient(900px 500px at 80% 20%, rgba(255,255,255,0.06), transparent 55%),
+    var(--bg);
+  min-height:100vh;
+}
+/* noise overlay */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+  opacity:.35;
+}
+
+.container{
+  width:min(1050px, 92vw);
+  margin:0 auto;
+  padding:28px 0 60px;
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
+}
+
+.brand{
+  font-weight:900;
+  letter-spacing:6px;
+  font-size:18px;
+  position:relative;
+  text-transform:uppercase;
+}
+/* glitch effect */
+.brand::before,
+.brand::after{
+  content:"PARASITE";
+  position:absolute;
+  left:0; top:0;
+  opacity:.7;
+  clip-path: inset(0 0 0 0);
+}
+.brand::before{ color:var(--blood); transform:translate(1px, -1px); animation:gl1 2.2s infinite linear; }
+.brand::after { color:#ffffff; transform:translate(-1px, 1px); animation:gl2 1.8s infinite linear; }
+
+@keyframes gl1{
+  0%{clip-path: inset(0 0 85% 0)}
+  20%{clip-path: inset(20% 0 55% 0)}
+  40%{clip-path: inset(60% 0 20% 0)}
+  60%{clip-path: inset(10% 0 70% 0)}
+  80%{clip-path: inset(40% 0 40% 0)}
+  100%{clip-path: inset(0 0 85% 0)}
+}
+@keyframes gl2{
+  0%{clip-path: inset(75% 0 0 0)}
+  25%{clip-path: inset(35% 0 35% 0)}
+  50%{clip-path: inset(10% 0 70% 0)}
+  75%{clip-path: inset(55% 0 20% 0)}
+  100%{clip-path: inset(75% 0 0 0)}
+}
+
+.menu{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:13px;
+  flex-wrap:wrap;
+}
+.menu a{
+  color:var(--muted);
+  text-decoration:none;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid transparent;
+}
+.menu a:hover{ color:var(--text); border-color:var(--line); }
+
+.badge{
+  border:1px solid rgba(255,26,26,0.45);
+  background:rgba(255,26,26,0.12);
+  color:var(--text);
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
+.lang{
+  display:flex;
+  gap:8px;
+}
+.lang button{
+  background:transparent;
+  color:var(--muted);
+  border:1px solid var(--line);
+  padding:6px 9px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:800;
+  font-size:12px;
+}
+.lang button:hover{
+  color:var(--text);
+  border-color:rgba(255,26,26,0.45);
+}
+.lang button.active{
+  color:var(--text);
+  border-color:rgba(255,26,26,0.6);
+  box-shadow:0 0 10px rgba(255,26,26,0.15);
+}
+
+/* sections */
+.hero{
+  margin-top:18px;
+  padding:22px 18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.25));
+}
+.hero h1{
+  margin:0;
+  font-size:28px;
+  letter-spacing:6px;
+  text-transform:uppercase;
+}
+.hero p{
+  margin:8px 0 0;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.checkout{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns: 1.3fr 0.9fr;
+  gap:14px;
+}
+
+.card{
+  background:rgba(15,15,15,0.75);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:16px;
+  position:relative;
+  overflow:hidden;
+}
+.card::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  background: radial-gradient(600px 240px at 20% 0%, rgba(255,26,26,0.18), transparent 55%);
+  opacity:.8;
+  pointer-events:none;
+}
+
+.h{
+  margin:0 0 10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-size:14px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin:0 0 6px;
+}
+
+.input, select{
+  width:100%;
+  padding:11px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:rgba(0,0,0,0.35);
+  color:var(--text);
+  outline:none;
+}
+.input:focus, select:focus{
+  border-color:rgba(255,26,26,0.55);
+  box-shadow:0 0 0 3px rgba(255,26,26,0.12);
+}
+
+.row{ margin-top:10px; }
+
+.hr{
+  height:1px;
+  background:rgba(255,255,255,0.10);
+  margin:14px 0;
+}
+
+.orderItem{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(0,0,0,0.25);
+}
+.itemTitle{ font-weight:900; }
+.itemMeta{ color:var(--muted); font-size:12px; margin-top:4px; }
+
+.qty{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+}
+.qbtn{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.12);
+  background:transparent;
+  color:var(--text);
+  font-weight:900;
+  cursor:pointer;
+}
+.qbtn:hover{ border-color:rgba(255,26,26,0.45); }
+.qval{
+  min-width:26px;
+  text-align:center;
+  font-weight:900;
+}
+
+.totals{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  margin-top:10px;
+}
+.line{
+  display:flex;
+  justify-content:space-between;
+  color:var(--muted);
+  font-size:13px;
+}
+.line strong{ color:var(--text); }
+
+.btn{
+  width:100%;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,26,26,0.55);
+  background:rgba(255,26,26,0.16);
+  color:var(--text);
+  font-weight:900;
+  letter-spacing:1px;
+  cursor:pointer;
+  margin-top:12px;
+}
+.btn:hover{ background:rgba(255,26,26,0.24); }
+
+.btn2{
+  width:100%;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  font-weight:800;
+  cursor:pointer;
+  margin-top:10px;
+}
+.btn2:hover{ border-color:rgba(255,26,26,0.45); }
+
+.note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+  margin-top:10px;
+}
+
+.success{
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,26,26,0.35);
+  background:rgba(255,26,26,0.10);
+}
+
+/* RTL when Arabic */
+html[dir="rtl"] body{ direction:rtl; }
+html[dir="rtl"] .nav{ flex-direction:row-reverse; }
+html[dir="rtl"] .menu{ flex-direction:row-reverse; }
+html[dir="rtl"] .card{ text-align:right; }
+
+@media (max-width:900px){
+  .checkout{ grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="nav">
+      <div class="brand">PARASITE</div>
+
+      <div class="menu">
+        <a href="index.html" id="backShop">Back to Shop</a>
+        <span class="badge" id="badge">CHECKOUT</span>
+
+        <div class="lang">
+          <button id="btnEN" onclick="setLang('en')">EN</button>
+          <button id="btnFR" onclick="setLang('fr')">FR</button>
+          <button id="btnAR" onclick="setLang('ar')">AR</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="hero">
+      <h1 id="title">Secure Checkout</h1>
+      <p id="subtitle">Delivery is FREE. Fill your details to place the order (demo).</p>
+    </section>
+
+    <section class="checkout">
+
+      <!-- LEFT: FORM -->
+      <div class="card">
+        <h2 class="h" id="shipInfoTitle">Shipping information</h2>
+
+        <div class="row">
+          <label id="lblFullName">Full name</label>
+          <input class="input" id="fullName" placeholder="Your full name" />
+        </div>
+
+        <div class="row">
+          <label id="lblPhone">Phone number</label>
+          <input class="input" id="phone" placeholder="+212 ..." />
+        </div>
+
+        <div class="row">
+          <label id="lblCity">City</label>
+          <input class="input" id="city" placeholder="Casablanca" />
+        </div>
+
+        <div class="row">
+          <label id="lblAddress">Address</label>
+          <input class="input" id="address" placeholder="Street / house number" />
+        </div>
+
+        <div class="hr"></div>
+
+        <h2 class="h" id="deliveryTitle">Delivery</h2>
+        <div class="note" id="deliveryNote">Shipping is FREE (Standard). No payment yet.</div>
+
+        <button class="btn" id="placeBtn" onclick="placeOrder()">PLACE ORDER</button>
+        <button class="btn2" id="continueBtn" onclick="window.location.href='index.html'">CONTINUE SHOPPING</button>
+
+        <div class="success" id="msg" style="display:none;"></div>
+      </div>
+
+      <!-- RIGHT: ORDER SUMMARY -->
+      <div class="card">
+        <h2 class="h" id="summaryTitle">Order summary</h2>
+
+        <div class="orderItem">
+          <div>
+            <div class="itemTitle" id="itemName">Parasite Hoodie</div>
+            <div class="itemMeta" id="itemMeta">Limited drop • Heavy cotton</div>
+
+            <div class="qty">
+              <button class="qbtn" onclick="changeQty(-1)">−</button>
+              <div class="qval" id="qty">1</div>
+              <button class="qbtn" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+          <div style="font-weight:900" id="itemPrice">$60</div>
+        </div>
+
+        <div class="hr"></div>
+
+        <div class="totals">
+          <div class="line"><span id="labSub">Subtotal</span><strong id="sub">$60</strong></div>
+          <div class="line"><span id="labShip">Shipping</span><strong id="shipCost">$0</strong></div>
+          <div class="line"><span id="labTotal">Total</span><strong id="total">$60</strong></div>
+        </div>
+
+        <div class="note" id="note2">
+          Next step: we can connect WhatsApp/Instagram or Stripe/PayPal later.
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+<script>
+  // Product data (from URL: checkout.html?item=hoodie|tshirt|mask)
+  const prices = { hoodie:60, tshirt:30, mask:20 };
+  const names  = { hoodie:"Parasite Hoodie", tshirt:"Parasite T-Shirt", mask:"Parasite Mask" };
+  const metas  = {
+    hoodie:"Limited drop • Heavy cotton",
+    tshirt:"Oversized fit • soft touch",
+    mask:"Minimal • horror vibe"
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  let item = params.get("item") || "hoodie";
+  if(!prices[item]) item = "hoodie";
+
+  let qty = 1;
+  const price = prices[item];
+
+  document.getElementById("itemName").innerText = names[item];
+  document.getElementById("itemMeta").innerText = metas[item];
+  document.getElementById("itemPrice").innerText = "$" + price;
+
+  function recalc(){
+    const ship = 0; // FREE SHIPPING
+    const sub = price * qty;
+    const total = sub + ship;
+
+    document.getElementById("qty").innerText = qty;
+    document.getElementById("sub").innerText = "$" + sub;
+    document.getElementById("shipCost").innerText = "$" + ship;
+    document.getElementById("total").innerText = "$" + total;
+  }
+
+  function changeQty(delta){
+    qty = Math.max(1, qty + delta);
+    recalc();
+  }
+  recalc();
+
+  // 3 languages
+  const t = {
+    en:{
+      dir:"ltr",
+      backShop:"Back to Shop",
+      badge:"CHECKOUT",
+      title:"Secure Checkout",
+      subtitle:"Delivery is FREE. Fill your details to place the order (demo).",
+      shipInfoTitle:"Shipping information",
+      lblFullName:"Full name",
+      lblPhone:"Phone number",
+      lblCity:"City",
+      lblAddress:"Address",
+      deliveryTitle:"Delivery",
+      deliveryNote:"Shipping is FREE (Standard). No payment yet.",
+      placeBtn:"PLACE ORDER",
+      continueBtn:"CONTINUE SHOPPING",
+      summaryTitle:"Order summary",
+      labSub:"Subtotal",
+      labShip:"Shipping",
+      labTotal:"Total",
+      note2:"Next step: we can connect WhatsApp/Instagram or Stripe/PayPal later.",
+      phFull:"Your full name",
+      phPhone:"+212 ...",
+      phCity:"Casablanca",
+      phAddress:"Street / house number",
+      ok:(total)=>`✅ Order saved (demo). Total: $${total}. We will contact you soon.`
+    },
+    fr:{
+      dir:"ltr",
+      backShop:"Retour à la boutique",
+      badge:"PAIEMENT",
+      title:"Paiement sécurisé",
+      subtitle:"La livraison est GRATUITE. Remplis tes infos pour valider la commande (démo).",
+      shipInfoTitle:"Informations de livraison",
+      lblFullName:"Nom complet",
+      lblPhone:"Numéro de téléphone",
+      lblCity:"Ville",
+      lblAddress:"Adresse",
+      deliveryTitle:"Livraison",
+      deliveryNote:"Livraison GRATUITE (Standard). Pas de paiement pour l’instant.",
+      placeBtn:"VALIDER LA COMMANDE",
+      continueBtn:"CONTINUER MES ACHATS",
+      summaryTitle:"Récapitulatif",
+      labSub:"Sous-total",
+      labShip:"Livraison",
+      labTotal:"Total",
+      note2:"Prochaine étape : on peut connecter WhatsApp/Instagram ou Stripe/PayPal.",
+      phFull:"Ton nom complet",
+      phPhone:"+212 ...",
+      phCity:"Casablanca",
+      phAddress:"Rue / numéro",
+      ok:(total)=>`✅ Commande enregistrée (démo). Total : $${total}. On te contactera bientôt.`
+    },
+    ar:{
+      dir:"rtl",
+      backShop:"الرجوع للمتجر",
+      badge:"الدفع",
+      title:"إتمام الطلب",
+      subtitle:"التوصيل مجاني. أدخل معلوماتك لإرسال الطلب (تجريبي).",
+      shipInfoTitle:"معلومات التوصيل",
+      lblFullName:"الاسم الكامل",
+      lblPhone:"رقم الهاتف",
+      lblCity:"المدينة",
+      lblAddress:"العنوان",
+      deliveryTitle:"التوصيل",
+      deliveryNote:"التوصيل مجاني (عادي). لا يوجد دفع الآن.",
+      placeBtn:"تأكيد الطلب",
+      continueBtn:"متابعة التسوق",
+      summaryTitle:"ملخص الطلب",
+      labSub:"المجموع الفرعي",
+      labShip:"التوصيل",
+      labTotal:"الإجمالي",
+      note2:"الخطوة القادمة: ربط واتساب/انستغرام أو Stripe/PayPal.",
+      phFull:"اسمك الكامل",
+      phPhone:"+212 ...",
+      phCity:"الدار البيضاء",
+      phAddress:"الشارع / رقم المنزل",
+      ok:(total)=>`✅ تم حفظ الطلب (تجريبي). الإجمالي: $${total}. سنتواصل معك قريباً.`
+    }
+  };
+
+  function setActive(lang){
+    document.getElementById("btnEN").classList.toggle("active", lang==="en");
+    document.getElementById("btnFR").classList.toggle("active", lang==="fr");
+    document.getElementById("btnAR").classList.toggle("active", lang==="ar");
+  }
+
+  function setLang(lang){
+    const d = t[lang] || t.en;
+    document.documentElement.lang = (lang==="ar") ? "ar" : (lang==="fr" ? "fr" : "en");
+    document.documentElement.dir = d.dir;
+
+    // texts
+    document.getElementById("backShop").innerText = d.backShop;
+    document.getElementById("badge").innerText = d.badge;
+    document.getElementById("title").innerText = d.title;
+    document.getElementById("subtitle").innerText = d.subtitle;
+
+    document.getElementById("shipInfoTitle").innerText = d.shipInfoTitle;
+    document.getElementById("lblFullName").innerText = d.lblFullName;
+    document.getElementById("lblPhone").innerText = d.lblPhone;
+    document.getElementById("lblCity").innerText = d.lblCity;
+    document.getElementById("lblAddress").innerText = d.lblAddress;
+
+    document.getElementById("deliveryTitle").innerText = d.deliveryTitle;
+    document.getElementById("deliveryNote").innerText = d.deliveryNote;
+
+    document.getElementById("placeBtn").innerText = d.placeBtn;
+    document.getElementById("continueBtn").innerText = d.continueBtn;
+
+    document.getElementById("summaryTitle").innerText = d.summaryTitle;
+    document.getElementById("labSub").innerText = d.labSub;
+    document.getElementById("labShip").innerText = d.labShip;
+    document.getElementById("labTotal").innerText = d.labTotal;
+    document.getElementById("note2").innerText = d.note2;
+
+    // placeholders
+    document.getElementById("fullName").placeholder = d.phFull;
+    document.getElementById("phone").placeholder = d.phPhone;
+    document.getElementById("city").placeholder = d.phCity;
+    document.getElementById("address").placeholder = d.phAddress;
+
+    setActive(lang);
+    localStorage.setItem("ck_lang", lang);
+  }
+
+  // place order (demo)
+  function placeOrder(){
+    const fullName = document.getElementById("fullName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const address = document.getElementById("address").value.trim();
+
+    if(!fullName || !phone || !city || !address){
+      const lang = localStorage.getItem("ck_lang") || "en";
+      const msg = document.getElementById("msg");
+      msg.style.display = "block";
+      msg.textContent = (lang==="ar")
+        ? "⚠️ عافاك عمر الاسم الكامل ورقم الهاتف والمدينة والعنوان."
+        : (lang==="fr")
+          ? "⚠️ Merci de remplir le nom complet, le téléphone, la ville et l’adresse."
+          : "⚠️ Please fill full name, phone, city and address.";
+      return;
+    }
+
+    const ship = 0;
+    const sub = price * qty;
+    const total = sub + ship;
+
+    // Save to localStorage (so you can see it later)
+    const order = {
+      createdAt: new Date().toISOString(),
+      item,
+      qty,
+      total,
+      fullName,
+      phone,
+      city,
+      address
+    };
+    localStorage.setItem("last_order", JSON.stringify(order));
+
+    const lang = localStorage.getItem("ck_lang") || "en";
+    const d = t[lang] || t.en;
+
+    const msg = document.getElementById("msg");
+    msg.style.display = "block";
+    msg.textContent = d.ok(total);
+  }
+
+  // default language
+  const saved = localStorage.getItem("ck_lang") || "en";
+  setLang(saved);
+</script>
+</body>
+</html>
