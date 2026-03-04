@@ -528,5 +528,47 @@ html[dir="rtl"] .card, html[dir="rtl"] .box{ text-align:right; }
   const saved = localStorage.getItem("lang") || "en";
   setLang(saved);
 </script>
+  <script>
+  const USD_TO_MAD = 10; // بدلها إذا بغيتي
+
+  // خزّن الأسعار بالدولار
+  const pricesUSD = {
+    hoodie: 60,
+    tshirt: 30,
+    mask: 20
+  };
+
+  // دالة كتبدل عرض الثمن حسب اللغة
+  function updatePrices(lang){
+    const isAR = (lang === 'ar');
+
+    const set = (id, usd) => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      if(isAR){
+        const mad = Math.round(usd * USD_TO_MAD);
+        el.textContent = mad + " MAD";
+      }else{
+        el.textContent = "$" + usd;
+      }
+    };
+
+    set("priceHoodie", pricesUSD.hoodie);
+    set("priceTshirt", pricesUSD.tshirt);
+    set("priceMask", pricesUSD.mask);
+  }
+
+  // نادِ هاد الدالة من داخل setLang
+  const _oldSetLang = window.setLang;
+  window.setLang = function(lang){
+    if(_oldSetLang) _oldSetLang(lang);
+    updatePrices(lang);
+  };
+
+  // أول تحميل
+  const saved = localStorage.getItem("lang") || "en";
+  updatePrices(saved);
+</script>
 </body>
+
 </html>
